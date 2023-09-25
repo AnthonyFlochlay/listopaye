@@ -5,11 +5,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.stream.Stream;
 
+import static com.listopaye.domain.DateTimeFixtures.*;
 import static com.listopaye.domain.MonthlyPeriod.DEFAULT_ZONE_ID;
 import static java.time.Month.MARCH;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -17,19 +18,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PeriodTest {
 
     @Test
-    void march_period_should_start_the_first_of_march_at_midnight() {
+    void march_period_of_current_year_starts_the_first_of_march_of_that_year_at_midnight() {
         // Given
-        var marchPeriod = new MonthlyPeriod(2023, MARCH);
+        var theMonthlyPeriod = new MonthlyPeriod(thisYear(), MARCH);
         // When/Then
         assertThat(
-                marchPeriod.getStartDate()
+                theMonthlyPeriod.getStartDateTime()
         ).isEqualTo(
-                firstDayOf(2023, MARCH).atStartOfDay().atZone(DEFAULT_ZONE_ID)
+                ZonedDateTime.of(thisYear(), MARCH.getValue(), 1, 0, 0, 0, 0, DEFAULT_ZONE_ID)
         );
     }
 
-    private LocalDate firstDayOf(int year, Month month) {
-        return LocalDate.of(year, month, 1);
+    @Test
+    void march_period_of_current_year_ends_the_31_of_march_of_that_year_at_next_midnight() {
+        // Given
+        var theMonthlyPeriod = new MonthlyPeriod(thisYear(), MARCH);
+        // When/Then
+        assertThat(
+                theMonthlyPeriod.getEndDateTime()
+        ).isEqualTo(
+                ZonedDateTime.of(thisYear(), MARCH.getValue(), 31, 23, 59, 59, 999999999, DEFAULT_ZONE_ID)
+        );
     }
 
     @EnumSource(Month.class)
@@ -40,14 +49,14 @@ class PeriodTest {
         var monthlyPeriod = new MonthlyPeriod(theYear, month);
         // When/Then
         assertThat(
-                monthlyPeriod.getStartDate()
+                monthlyPeriod.getStartDateTime()
         ).isEqualTo(
                 firstDayOf(2023, month).atStartOfDay().atZone(DEFAULT_ZONE_ID)
         );
     }
 
     private static int aYear() {
-        return 2023;
+        return thisYear();
     }
 
     @MethodSource("someYears")
@@ -58,7 +67,7 @@ class PeriodTest {
         var monthlyPeriod = new MonthlyPeriod(theYear, theMonth);
         // When/Then
         assertThat(
-                monthlyPeriod.getStartDate()
+                monthlyPeriod.getStartDateTime()
         ).isEqualTo(
                 firstDayOf(theYear, theMonth).atStartOfDay().atZone(DEFAULT_ZONE_ID)
         );
@@ -68,14 +77,6 @@ class PeriodTest {
         return Stream.of(
                 2022, 2023, 2024, thisYear(), thisYearPlusYears(1), thisYearPlusYears(10), thisYearPlusYears(-7)
         );
-    }
-
-    private static Integer thisYear() {
-        return thisYearPlusYears(0);
-    }
-
-    private static int thisYearPlusYears(int yearOffset) {
-        return ZonedDateTime.now().plusYears(yearOffset).getYear();
     }
 
     private static Month aMonth() {
