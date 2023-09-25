@@ -19,4 +19,9 @@ public record MonthlyPeriod(int year, Month month) {
     private YearMonth yearMonth() {
         return YearMonth.of(this.year, this.month);
     }
+
+    public boolean contains(ZonedDateTime dateTime) {
+        return getStartDateTime().isBefore(dateTime)
+                && getEndDateTime().isAfter(dateTime);
+    }
 }

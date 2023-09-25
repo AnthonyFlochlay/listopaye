@@ -108,5 +108,13 @@ class PeriodTest {
     void february_periods_end_at_the_last_day_the_month(MonthlyPeriod theMonthlyPeriod, int expectedLastDay) {
         assertThat(theMonthlyPeriod.getEndDateTime().getDayOfMonth()).isEqualTo(expectedLastDay);
     }
+
+    @Test
+    void days_are_included_in_their_monthly_period() {
+        var theDateTime = ZonedDateTime.now();
+        assertThat(
+            new MonthlyPeriod(theDateTime.getYear(), theDateTime.getMonth()).contains(theDateTime)
+        ).isTrue();
+    }
 }
 
