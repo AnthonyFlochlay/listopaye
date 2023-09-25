@@ -2,17 +2,19 @@ package com.listopaye.domain;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalTime;
 import java.time.Month;
 import java.time.ZonedDateTime;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static com.listopaye.domain.DateTimeFixtures.*;
 import static com.listopaye.domain.MonthlyPeriod.DEFAULT_ZONE_ID;
-import static java.time.Month.MARCH;
+import static java.time.Month.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PeriodTest {
@@ -41,46 +43,70 @@ class PeriodTest {
         );
     }
 
-    @EnumSource(Month.class)
-    @ParameterizedTest
-    void monthly_period_should_start_the_first_of_month_at_midnight(Month month) {
-        // Given
-        int theYear = aYear();
-        var monthlyPeriod = new MonthlyPeriod(theYear, month);
-        // When/Then
-        assertThat(
-                monthlyPeriod.getStartDateTime()
-        ).isEqualTo(
-                firstDayOf(2023, month).atStartOfDay().atZone(DEFAULT_ZONE_ID)
+    private static Stream<MonthlyPeriod> someMonthlyPeriods() {
+        return IntStream.range(0, 10).mapToObj(
+                i -> aMonthlyPeriod()
         );
     }
 
-    private static int aYear() {
-        return thisYear();
+    private static MonthlyPeriod aMonthlyPeriod() {
+        return new MonthlyPeriod(aYear(), aMonth());
     }
 
-    @MethodSource("someYears")
+    @MethodSource("someMonthlyPeriods")
     @ParameterizedTest
-    void monthly_period_should_start_the_first_of_month_at_midnight_of_the_year(int theYear) {
-        // Given
-        Month theMonth = aMonth();
-        var monthlyPeriod = new MonthlyPeriod(theYear, theMonth);
-        // When/Then
-        assertThat(
-                monthlyPeriod.getStartDateTime()
-        ).isEqualTo(
-                firstDayOf(theYear, theMonth).atStartOfDay().atZone(DEFAULT_ZONE_ID)
-        );
+    void monthly_periods_start_the_first_day_of_the_month_of_the_year_at_midnight(MonthlyPeriod theMonthlyPeriod) {
+        ZonedDateTime startDateTime = theMonthlyPeriod.getStartDateTime();
+        assertThat(startDateTime.getYear()).isEqualTo(theMonthlyPeriod.year());
+        assertThat(startDateTime.getMonth()).isEqualTo(theMonthlyPeriod.month());
+        assertThat(startDateTime.getDayOfMonth()).isEqualTo(1);
+        assertThat(startDateTime.toLocalTime()).isEqualTo(LocalTime.of(0, 0, 0, 0));
     }
 
-    public static Stream<Integer> someYears() {
+    private static Stream<Arguments> someMonthlyPeriodsWithLastDay() {
         return Stream.of(
-                2022, 2023, 2024, thisYear(), thisYearPlusYears(1), thisYearPlusYears(10), thisYearPlusYears(-7)
+                Arguments.of(new MonthlyPeriod(aYear(), JANUARY), 31),
+                Arguments.of(new MonthlyPeriod(2023, FEBRUARY), 28),
+                Arguments.of(new MonthlyPeriod(aYear(), MARCH), 31),
+                Arguments.of(new MonthlyPeriod(aYear(), APRIL), 30),
+                Arguments.of(new MonthlyPeriod(aYear(), MAY), 31),
+                Arguments.of(new MonthlyPeriod(aYear(), JUNE), 30),
+                Arguments.of(new MonthlyPeriod(aYear(), JULY), 31),
+                Arguments.of(new MonthlyPeriod(aYear(), AUGUST), 31),
+                Arguments.of(new MonthlyPeriod(aYear(), SEPTEMBER), 30),
+                Arguments.of(new MonthlyPeriod(aYear(), OCTOBER), 31),
+                Arguments.of(new MonthlyPeriod(aYear(), NOVEMBER), 30),
+                Arguments.of(new MonthlyPeriod(aYear(), DECEMBER), 31)
         );
     }
 
-    private static Month aMonth() {
-        return Month.JULY;
+    @MethodSource("someMonthlyPeriodsWithLastDay")
+    @ParameterizedTest
+    void monthly_periods_end_the_last_day_of_the_month_of_the_year_at_next_midnight(MonthlyPeriod theMonthlyPeriod, int expectedLastDay) {
+        var theEndDateTime = theMonthlyPeriod.getEndDateTime();
+
+        assertThat(theEndDateTime.getYear()).isEqualTo(theMonthlyPeriod.year());
+        assertThat(theEndDateTime.getMonth()).isEqualTo(theMonthlyPeriod.month());
+        assertThat(theEndDateTime.getDayOfMonth()).isEqualTo(expectedLastDay);
+        assertThat(theEndDateTime.toLocalTime()).isEqualTo(LocalTime.of(23, 59, 59, 999999999));
     }
 
+    private static Stream<Arguments> someFebruaryPeriodsWithLastDay() {
+        return Stream.of(
+                Arguments.of(new MonthlyPeriod(2020, FEBRUARY), 29),
+                Arguments.of(new MonthlyPeriod(2021, FEBRUARY), 28),
+                Arguments.of(new MonthlyPeriod(2022, FEBRUARY), 28),
+                Arguments.of(new MonthlyPeriod(2023, FEBRUARY), 28),
+                Arguments.of(new MonthlyPeriod(2024, FEBRUARY), 29),
+                Arguments.of(new MonthlyPeriod(2030, FEBRUARY), 28),
+                Arguments.of(new MonthlyPeriod(2100, FEBRUARY), 28)
+        );
+    }
+
+    @MethodSource("someFebruaryPeriodsWithLastDay")
+    @ParameterizedTest
+    void february_periods_end_at_the_last_day_the_month(MonthlyPeriod theMonthlyPeriod, int expectedLastDay) {
+        assertThat(theMonthlyPeriod.getEndDateTime().getDayOfMonth()).isEqualTo(expectedLastDay);
+    }
 }
+
