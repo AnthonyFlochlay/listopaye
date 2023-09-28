@@ -2,7 +2,7 @@ package com.listopaye.domain;
 
 import java.time.ZonedDateTime;
 
-public record PTO(ZonedDateTime start, ZonedDateTime end) {
+public record PTO(ZonedDateTime startDate, ZonedDateTime endDate) {
     public static PTO of(ZonedDateTime start, ZonedDateTime end) {
         return new PTO(start, end);
     }
@@ -11,6 +11,6 @@ public record PTO(ZonedDateTime start, ZonedDateTime end) {
     }
 
     public boolean isFullyIncludedIn(MonthlyPeriod period) {
-        return period.contains(start) && period.contains(end);
+        return period.contains(startDate) && period.contains(endDate);
     }
 }

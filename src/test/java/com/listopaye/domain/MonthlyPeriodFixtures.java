@@ -32,7 +32,7 @@ public class MonthlyPeriodFixtures {
                 .withMonth(monthlyPeriod.month().getValue());
     }
 
-    private static MonthlyPeriod monthlyPeriodContaining(ZonedDateTime dateTime) {
+    public static MonthlyPeriod monthlyPeriodContaining(ZonedDateTime dateTime) {
         return MonthlyPeriod.of(dateTime.getYear(), dateTime.getMonth());
     }
 }

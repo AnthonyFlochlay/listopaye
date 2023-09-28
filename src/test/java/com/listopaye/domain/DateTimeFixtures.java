@@ -32,4 +32,15 @@ public class DateTimeFixtures {
         return theDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
+    public static ZonedDateTime dayOf(int year, Month month, int day) {
+        return aDateTime()
+                .withYear(year)
+                .withMonth(month.getValue())
+                .withDayOfMonth(day);
+    }
+
+    private static ZonedDateTime aDateTime() {
+        return ZonedDateTime.now();
+    }
+
 }

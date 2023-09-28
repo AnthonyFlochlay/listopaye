@@ -1,22 +1,46 @@
 package com.listopaye.domain;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-import java.time.ZonedDateTime;
+import java.util.stream.Stream;
 
+import static com.listopaye.domain.DateTimeFixtures.dayOf;
 import static com.listopaye.domain.DateTimeFixtures.thisYear;
-import static java.time.Month.APRIL;
+import static com.listopaye.domain.MonthlyPeriodFixtures.monthlyPeriodContaining;
+import static java.time.Month.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PtoTest {
 
-    @Test
-    void pto_on_25_april_is_fully_included_in_april_period() {
-        var thePto = PTO.of(ZonedDateTime.now().withMonth(APRIL.getValue()).withDayOfMonth(25));
-        var aprilPeriod = MonthlyPeriod.of(thisYear(), APRIL);
+    private static Stream<PTO> somePtosOnOneMonth() {
+        return Stream.of(
+                PTO.of(dayOf(thisYear(), APRIL, 25)),
+                PTO.of(dayOf(thisYear(), APRIL, 25), dayOf(thisYear(), APRIL, 28)),
+                PTO.of(dayOf(thisYear(), APRIL, 1), dayOf(thisYear(), APRIL, 30))
+        );
+    }
 
+    @MethodSource("somePtosOnOneMonth")
+    @ParameterizedTest
+    void pto_on_one_month_is_fully_included_in_the_monthly_period(PTO aPtoOnOneMonth) {
         assertThat(
-            thePto.isFullyIncludedIn(aprilPeriod)
+                aPtoOnOneMonth.isFullyIncludedIn(monthlyPeriodContaining(aPtoOnOneMonth.startDate()))
         ).isTrue();
     }
+
+    private static Stream<PTO> somePtosOnSeveralMonths() {
+        return Stream.of(
+                PTO.of(dayOf(thisYear(), APRIL, 25), dayOf(thisYear(), MAY, 1)),
+                PTO.of(dayOf(thisYear(), MARCH, 12), dayOf(thisYear(), JUNE, 18))
+        );
+    }
+
+    @MethodSource("somePtosOnSeveralMonths")
+    @ParameterizedTest
+    void pto_on_several_months_is_not_fully_included_in_those_months(PTO ptoOnSeveralMonths) {
+        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.startDate()))).isFalse();
+        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.endDate()))).isFalse();
+    }
+
 }
