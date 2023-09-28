@@ -28,11 +28,8 @@ public class DateTimeFixtures {
         return allMonths[RANDOM.nextInt(allMonths.length)];
     }
 
-    public static LocalDate firstDayOf(int year, Month month) {
-        return YearMonth.of(year, month).atDay(1);
+    public static ZonedDateTime firstInstantOfMonth(ZonedDateTime theDateTime) {
+        return theDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 
-    public static LocalDate lastDayOf(int year, Month month) {
-        return YearMonth.of(year, month).atEndOfMonth();
-    }
 }
