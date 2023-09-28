@@ -7,14 +7,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static com.listopaye.domain.DateTimeFixtures.*;
+import static com.listopaye.domain.DateTimeFixtures.thisYear;
 import static com.listopaye.domain.MonthlyPeriod.DEFAULT_ZONE_ID;
 import static com.listopaye.domain.MonthlyPeriodFixtures.aMonthlyPeriod;
 import static com.listopaye.domain.MonthlyPeriodFixtures.monthlyPeriodFollowing;
-import static java.time.Month.*;
+import static java.time.Month.APRIL;
+import static java.time.Month.MARCH;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MonthlyPeriodTest implements PeriodTest {
@@ -65,25 +65,6 @@ class MonthlyPeriodTest implements PeriodTest {
         ).isEqualTo(
                 monthlyPeriodFollowing(theMonthlyPeriod).startDateTime()
         );
-    }
-
-    public static Stream<ZonedDateTime> someDateTimes() {
-        return IntStream.range(0, 10).mapToObj(
-                i -> ZonedDateTime.now()
-                        .withYear(aYear())
-                        .withMonth(aMonth().getValue())
-        );
-    }
-
-    @MethodSource("someDateTimes")
-    @ParameterizedTest
-    void days_are_included_in_their_monthly_period(ZonedDateTime theDateTime) {
-        var theMonthlyPeriod = new MonthlyPeriod(theDateTime.getYear(), theDateTime.getMonth());
-        assertThat(theMonthlyPeriod.contains(theDateTime)).isTrue();
-        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime))).isTrue();
-        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).minusNanos(1))).isFalse();
-        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).plusMonths(1))).isFalse();
-        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).plusMonths(1).minusNanos(1))).isTrue();
     }
 
     @Override

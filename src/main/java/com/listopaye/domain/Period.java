@@ -6,9 +6,6 @@ public interface Period {
 
     ZonedDateTime startDateTime();
     ZonedDateTime endDateTime();
-    default boolean contains(ZonedDateTime dateTime) {
-        return startsBeforeOrEqual(dateTime) && endsAfter(dateTime);
-    }
 
     default boolean startsBeforeOrEqual(ZonedDateTime dateTime) {
         return startsBefore(dateTime) || startDateTime().isEqual(dateTime);
