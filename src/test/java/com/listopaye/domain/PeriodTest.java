@@ -3,11 +3,9 @@ package com.listopaye.domain;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalTime;
-import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -109,12 +107,27 @@ class PeriodTest {
         assertThat(theMonthlyPeriod.getEndDateTime().getDayOfMonth()).isEqualTo(expectedLastDay);
     }
 
-    @Test
-    void days_are_included_in_their_monthly_period() {
-        var theDateTime = ZonedDateTime.now();
-        assertThat(
-            new MonthlyPeriod(theDateTime.getYear(), theDateTime.getMonth()).contains(theDateTime)
-        ).isTrue();
+    public static Stream<ZonedDateTime> someDateTimes() {
+        return IntStream.range(0, 10).mapToObj(
+                i -> ZonedDateTime.now()
+                        .withYear(aYear())
+                        .withMonth(aMonth().getValue())
+        );
+    }
+
+    @MethodSource("someDateTimes")
+    @ParameterizedTest
+    void days_are_included_in_their_monthly_period(ZonedDateTime theDateTime) {
+        var theMonthlyPeriod = new MonthlyPeriod(theDateTime.getYear(), theDateTime.getMonth());
+        assertThat(theMonthlyPeriod.contains(theDateTime)).isTrue();
+        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime))).isTrue();
+        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).minusNanos(1))).isFalse();
+        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).plusMonths(1))).isFalse();
+        assertThat(theMonthlyPeriod.contains(firstInstantOfMonth(theDateTime).plusMonths(1).minusNanos(1))).isTrue();
+    }
+
+    private static ZonedDateTime firstInstantOfMonth(ZonedDateTime theDateTime) {
+        return theDateTime.withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
     }
 }
 
