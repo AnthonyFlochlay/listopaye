@@ -23,9 +23,9 @@ public class PtoTest {
 
     @MethodSource("somePtosOnOneMonth")
     @ParameterizedTest
-    void pto_on_one_month_is_fully_included_in_the_monthly_period(PTO aPtoOnOneMonth) {
+    void pto_on_one_month_is_fully_included_in_the_monthly_period(PTO thePtoOnOneMonth) {
         assertThat(
-                aPtoOnOneMonth.isFullyIncludedIn(monthlyPeriodContaining(aPtoOnOneMonth.startDate()))
+                thePtoOnOneMonth.isFullyIncludedIn(monthlyPeriodContaining(thePtoOnOneMonth.startDateTime()))
         ).isTrue();
     }
 
@@ -39,8 +39,16 @@ public class PtoTest {
     @MethodSource("somePtosOnSeveralMonths")
     @ParameterizedTest
     void pto_on_several_months_is_not_fully_included_in_those_months(PTO ptoOnSeveralMonths) {
-        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.startDate()))).isFalse();
-        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.endDate()))).isFalse();
+        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.startDateTime()))).isFalse();
+        assertThat(ptoOnSeveralMonths.isFullyIncludedIn(monthlyPeriodContaining(ptoOnSeveralMonths.endDateTime()))).isFalse();
+    }
+
+    @MethodSource("somePtosOnOneMonth")
+    @ParameterizedTest
+    void pto_on_one_month_are_partially_included_in_the_monthly_period(PTO aPtoOnOneMonth) {
+        assertThat(
+                aPtoOnOneMonth.isPartiallyIncludedIn(monthlyPeriodContaining(aPtoOnOneMonth.startDateTime()))
+        ).isTrue();
     }
 
 }

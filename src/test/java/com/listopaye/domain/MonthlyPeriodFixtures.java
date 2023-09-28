@@ -35,4 +35,5 @@ public class MonthlyPeriodFixtures {
     public static MonthlyPeriod monthlyPeriodContaining(ZonedDateTime dateTime) {
         return MonthlyPeriod.of(dateTime.getYear(), dateTime.getMonth());
     }
+
 }

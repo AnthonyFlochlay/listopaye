@@ -2,7 +2,6 @@ package com.listopaye.domain;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.time.LocalDateTime;
@@ -25,7 +24,7 @@ class PeriodTest {
         var theMonthlyPeriod = new MonthlyPeriod(thisYear(), MARCH);
         // When/Then
         assertThat(
-                theMonthlyPeriod.getStartDateTime()
+                theMonthlyPeriod.startDateTime()
         ).isEqualTo(
                 ZonedDateTime.of(thisYear(), MARCH.getValue(), 1, 0, 0, 0, 0, DEFAULT_ZONE_ID)
         );
@@ -37,7 +36,7 @@ class PeriodTest {
         var theMonthlyPeriod = new MonthlyPeriod(thisYear(), MARCH);
         // When/Then
         assertThat(
-                theMonthlyPeriod.getEndDateTime()
+                theMonthlyPeriod.endDateTime()
         ).isEqualTo(
                 LocalDateTime.of(thisYear(), APRIL, 1, 0, 0, 0, 0).atZone(DEFAULT_ZONE_ID)
         );
@@ -50,7 +49,7 @@ class PeriodTest {
     @MethodSource("someMonthlyPeriods")
     @ParameterizedTest
     void monthly_periods_start_the_first_day_of_the_month_of_the_year_at_midnight(MonthlyPeriod theMonthlyPeriod) {
-        ZonedDateTime startDateTime = theMonthlyPeriod.getStartDateTime();
+        ZonedDateTime startDateTime = theMonthlyPeriod.startDateTime();
         assertThat(startDateTime.getYear()).isEqualTo(theMonthlyPeriod.year());
         assertThat(startDateTime.getMonth()).isEqualTo(theMonthlyPeriod.month());
         assertThat(startDateTime.getDayOfMonth()).isEqualTo(1);
@@ -61,9 +60,9 @@ class PeriodTest {
     @ParameterizedTest
     void monthly_periods_end_the_first_instant_of_the_following_period(MonthlyPeriod theMonthlyPeriod) {
         assertThat(
-                theMonthlyPeriod.getEndDateTime()
+                theMonthlyPeriod.endDateTime()
         ).isEqualTo(
-                monthlyPeriodFollowing(theMonthlyPeriod).getStartDateTime()
+                monthlyPeriodFollowing(theMonthlyPeriod).startDateTime()
         );
     }
 
