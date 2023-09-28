@@ -39,7 +39,7 @@ public class DateTimeFixtures {
                 .withDayOfMonth(day);
     }
 
-    private static ZonedDateTime aDateTime() {
+    public static ZonedDateTime aDateTime() {
         return ZonedDateTime.now();
     }
 
