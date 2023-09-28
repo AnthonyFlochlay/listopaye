@@ -16,4 +16,11 @@ public record PtoPeriod(ZonedDateTime startDateTime, ZonedDateTime endDateTime) 
         return new PtoPeriod(start, start.plusDays(1));
     }
 
+    public boolean isSingleMonth() {
+        return isSingleYear() && startDateTime.getMonth() == endDateTime.getMonth();
+    }
+
+    private boolean isSingleYear() {
+        return startDateTime.getYear() == endDateTime.getYear();
+    }
 }
