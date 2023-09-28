@@ -1,5 +1,5 @@
 package com.listopaye.domain;
 
-public interface PeriodTest extends StartsBeforeOrEqualTimeTest, EndsBeforeOrEqualTimeTest, StartBeforeOrEqualPeriodTest {
+public interface PeriodTest extends StartsBeforeOrEqualTimeTest, EndsBeforeOrEqualTimeTest, StartsBeforeOrEqualPeriodTest, EndsAfterOrEqualTest {
 
 }

@@ -43,4 +43,12 @@ public class DateTimeFixtures {
         return ZonedDateTime.now();
     }
 
+    public static ZonedDateTime aTimeAfter(Period thePeriod) {
+        return thePeriod.endDateTime().plusMinutes(1);
+    }
+
+    public static ZonedDateTime aTimeBefore(Period thePeriod) {
+        return thePeriod.startDateTime().minusMinutes(1);
+    }
+
 }
