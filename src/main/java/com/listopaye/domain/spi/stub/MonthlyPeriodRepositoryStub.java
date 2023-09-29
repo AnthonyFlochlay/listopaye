@@ -4,23 +4,18 @@ import com.listopaye.domain.MonthlyPeriod;
 import com.listopaye.domain.spi.MonthlyPeriodRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Repository
 public class MonthlyPeriodRepositoryStub implements MonthlyPeriodRepository {
 
-    private final Map<MonthlyPeriodId, MonthlyPeriod> monthlyPeriods = new HashMap<>();
+    private final ConcurrentMap<MonthlyPeriodId, MonthlyPeriod> monthlyPeriods = new ConcurrentHashMap<>();
 
     @Override
     public MonthlyPeriod getMonthlyPeriod(MonthlyPeriodId id) {
-        if (!monthlyPeriods.containsKey(id)) {
-            createMonthlyPeriod(id);
-        }
-        return monthlyPeriods.get(id);
+        MonthlyPeriod newMonthlyPeriod = MonthlyPeriod.of(id.year(), id.month());
+        return monthlyPeriods.putIfAbsent(id, newMonthlyPeriod);
     }
 
-    private void createMonthlyPeriod(MonthlyPeriodId id) {
-        monthlyPeriods.put(id, MonthlyPeriod.of(id.year(), id.month()));
-    }
 }

@@ -21,7 +21,7 @@ public class MonthlyPeriodController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MonthlyPeriodRepresentation> getMonthlyPeriodById(@PathVariable String id) {
-        MonthlyPeriodId monthlyPeriodId = MonthlyPeriodIdRepresentation.monthlyPeriodOf(id);
+        var monthlyPeriodId = MonthlyPeriodIdRepresentation.monthlyPeriodOf(id);
         var monthlyPeriod = monthlyPeriodService.getMonthlyPeriod(monthlyPeriodId);
         return ResponseEntity.ok(MonthlyPeriodRepresentation.of(monthlyPeriod));
     }

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public class PtoRepositoryStub implements PtoRepository {
-    private Map<UUID, Pto> ptos = new HashMap<>();
+    private final Map<UUID, Pto> ptos = new HashMap<>();
 
     @Override
     public Pto getById(UUID id) {
