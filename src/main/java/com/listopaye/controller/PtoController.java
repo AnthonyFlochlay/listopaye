@@ -14,8 +14,11 @@ import static org.springframework.web.servlet.mvc.method.annotation.MvcUriCompon
 @RequestMapping("/ptos")
 public class PtoController {
 
-    @Autowired
-    PtoService ptoService;
+    private final PtoService ptoService;
+
+    public PtoController(PtoService ptoService) {
+        this.ptoService = ptoService;
+    }
 
     @PostMapping
     public ResponseEntity<PtoRepresentation> createPto(@RequestBody NewPtoRepresentation newPto) {
