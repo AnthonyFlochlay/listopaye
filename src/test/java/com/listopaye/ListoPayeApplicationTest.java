@@ -43,6 +43,28 @@ class ListoPayeApplicationTest {
     }
 
     @Test
+    void create_a_multi_days_pto() {
+        // Given
+        var theNewPto = NewPtoRepresentation.ofMultiDays(
+                "Bob",
+                LocalDate.of(2023, Month.APRIL.getValue(), 8),
+                LocalDate.of(2023, Month.APRIL.getValue(), 12)
+        );
+        // When
+        var response = restTemplate.postForEntity("/ptos", theNewPto, PtoRepresentation.class);
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(response.getBody()).satisfies(
+                createdPto -> {
+                    assertThat(createdPto.id()).isNotNull();
+                    assertThat(createdPto.employeeName()).isEqualTo("Bob");
+                    assertThat(createdPto.startDate()).isEqualTo(theNewPto.startDate());
+                    assertThat(createdPto.endDate()).isEqualTo(theNewPto.endDate());
+                }
+        );
+    }
+
+    @Test
     void get_an_existing_pto() {
         // Given
         var createdPto = createPto(NewPtoRepresentation.ofSingleDay("Bob", LocalDate.of(2023, Month.APRIL.getValue(), 8))).getBody();
