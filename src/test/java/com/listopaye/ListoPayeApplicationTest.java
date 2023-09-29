@@ -1,5 +1,6 @@
 package com.listopaye;
 
+import com.listopaye.controller.MonthlyPeriodIdRepresentation;
 import com.listopaye.controller.NewPtoRepresentation;
 import com.listopaye.controller.PtoRepresentation;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.time.Month;
 
+import static com.listopaye.DateFixtures.thisYear;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -76,4 +78,23 @@ class ListoPayeApplicationTest {
     private ResponseEntity<PtoRepresentation> createPto(NewPtoRepresentation theNewPto) {
         return restTemplate.postForEntity("/ptos", theNewPto, PtoRepresentation.class);
     }
+
+    @Test
+    void get_monthly_period() {
+        // Given
+        int theYear = thisYear();
+        var theMonth = Month.APRIL;
+        var theMonthlyPeriodId = MonthlyPeriodIdRepresentation.of(theYear, theMonth);
+        // When
+        var response = restTemplate.getForEntity("/monthly-periods/" + theMonthlyPeriodId, MonthlyPeriodRepresentation.class);
+        // Then
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(
+                MonthlyPeriodRepresentation.of(
+                        theMonthlyPeriodId,
+                        theYear,
+                        theMonth
+        ));
+    }
+
 }
