@@ -7,8 +7,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-//TODO: should prevent from creating PTO with end date before start date
 public record Pto(UUID id, String employeeName, LocalDate startDate, LocalDate endDate) {
+
+    public Pto(UUID id, String employeeName, LocalDate startDate, LocalDate endDate) {
+        this.id = id;
+        this.employeeName = employeeName;
+        this.startDate = startDate;
+        if (endDate.isBefore(startDate))
+            throw new IllegalArgumentException("End date should be after start date");
+        this.endDate = endDate;
+    }
+
     public static Pto of(UUID id, String employeeName, LocalDate startDate, LocalDate endDate) {
         return new Pto(id, employeeName, startDate, endDate);
     }
