@@ -31,13 +31,17 @@ class ListoPayeApplicationTest {
         // When
         var response = restTemplate.postForEntity("/ptos", theNewPto, PtoRepresentation.class);
         // Then
+        assertPtoIsCreatedAndEquals(response, theNewPto);
+    }
+
+    private static void assertPtoIsCreatedAndEquals(ResponseEntity<PtoRepresentation> response, NewPtoRepresentation expectedPto) {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).satisfies(
                 createdPto -> {
                     assertThat(createdPto.id()).isNotNull();
                     assertThat(createdPto.employeeName()).isEqualTo("Bob");
-                    assertThat(createdPto.startDate()).isEqualTo(theNewPto.startDate());
-                    assertThat(createdPto.endDate()).isEqualTo(theNewPto.endDate());
+                    assertThat(createdPto.startDate()).isEqualTo(expectedPto.startDate());
+                    assertThat(createdPto.endDate()).isEqualTo(expectedPto.endDate());
                 }
         );
     }
@@ -53,15 +57,7 @@ class ListoPayeApplicationTest {
         // When
         var response = restTemplate.postForEntity("/ptos", theNewPto, PtoRepresentation.class);
         // Then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody()).satisfies(
-                createdPto -> {
-                    assertThat(createdPto.id()).isNotNull();
-                    assertThat(createdPto.employeeName()).isEqualTo("Bob");
-                    assertThat(createdPto.startDate()).isEqualTo(theNewPto.startDate());
-                    assertThat(createdPto.endDate()).isEqualTo(theNewPto.endDate());
-                }
-        );
+        assertPtoIsCreatedAndEquals(response, theNewPto);
     }
 
     @Test
