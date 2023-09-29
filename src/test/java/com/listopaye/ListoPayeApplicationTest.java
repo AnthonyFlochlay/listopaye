@@ -9,6 +9,9 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDate;
+import java.time.Month;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -19,9 +22,12 @@ class ListoPayeApplicationTest {
     TestRestTemplate restTemplate;
 
     @Test
-    void create_a_pto() {
+    void create_a_single_day_pto() {
         // Given
-        var theNewPto = NewPtoRepresentation.of("Bob");
+        var theNewPto = NewPtoRepresentation.ofSingleDay(
+                "Bob",
+                LocalDate.of(2023, Month.APRIL.getValue(), 8)
+        );
         // When
         var response = restTemplate.postForEntity("/ptos", theNewPto, PtoRepresentation.class);
         // Then
@@ -30,6 +36,8 @@ class ListoPayeApplicationTest {
                 createdPto -> {
                     assertThat(createdPto.id()).isNotNull();
                     assertThat(createdPto.employeeName()).isEqualTo("Bob");
+                    assertThat(createdPto.startDate()).isEqualTo(theNewPto.startDate());
+                    assertThat(createdPto.endDate()).isEqualTo(theNewPto.endDate());
                 }
         );
     }
@@ -37,7 +45,7 @@ class ListoPayeApplicationTest {
     @Test
     void get_an_existing_pto() {
         // Given
-        var createdPto = createPto(NewPtoRepresentation.of("Bob")).getBody();
+        var createdPto = createPto(NewPtoRepresentation.ofSingleDay("Bob", LocalDate.of(2023, Month.APRIL.getValue(), 8))).getBody();
         // When
         ResponseEntity<PtoRepresentation> response = restTemplate.getForEntity("/ptos/" + createdPto.id(), PtoRepresentation.class);
         // Then

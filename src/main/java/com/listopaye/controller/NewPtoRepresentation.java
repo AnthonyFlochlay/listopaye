@@ -2,12 +2,14 @@ package com.listopaye.controller;
 
 import com.listopaye.domain.NewPto;
 
-public record NewPtoRepresentation(String employeeName) {
-    public static NewPtoRepresentation of(String employeeName) {
-        return new NewPtoRepresentation(employeeName);
+import java.time.LocalDate;
+
+public record NewPtoRepresentation(String employeeName, LocalDate startDate, LocalDate endDate) {
+    public static NewPtoRepresentation ofSingleDay(String employeeName, LocalDate localDate) {
+        return new NewPtoRepresentation(employeeName, localDate, localDate.plusDays(1));
     }
 
     public NewPto toDomain() {
-        return NewPto.of(employeeName);
+        return NewPto.of(employeeName, startDate, endDate);
     }
 }

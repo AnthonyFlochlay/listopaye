@@ -15,7 +15,7 @@ public class PtoService {
     }
 
     public Pto createPto(NewPto newPto) {
-        var pto = Pto.of(UUID.randomUUID(), newPto.employeeName());
+        var pto = Pto.of(UUID.randomUUID(), newPto.employeeName(), newPto.startDate(), newPto.endDate());
         ptoRepository.create(pto);
         return pto;
     }
