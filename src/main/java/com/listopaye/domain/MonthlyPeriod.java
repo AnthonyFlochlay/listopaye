@@ -1,5 +1,7 @@
 package com.listopaye.domain;
 
+import com.listopaye.domain.spi.stub.MonthlyPeriodId;
+
 import java.time.Month;
 import java.util.Collection;
 import java.util.List;
@@ -20,13 +22,31 @@ public record MonthlyPeriod(int year, Month month, List<MonthlyPeriodPto> ptos) 
     }
 
     public MonthlyPeriod merge(MonthlyPeriod other) {
-        //TODO: check same monthlyPeriodId
+        if (!this.monthlyPeriodId().equals(other.monthlyPeriodId()))
+            throw new IllegalArgumentException("Cannot merge periods on different months!");
         return MonthlyPeriod.of(
                 year,
                 month,
                 Stream.of(this.ptos(), other.ptos()).flatMap(Collection::stream)
 //                        TODO: use distinct()
                         .toList()
+        );
+    }
+
+    private void checkSamePeriodIds(MonthlyPeriod other) {
+        if (!this.monthlyPeriodId().equals(other.monthlyPeriodId()))
+            throw new IllegalArgumentException("Cannot merge periods on different month: ");
+    }
+
+    private MonthlyPeriodId monthlyPeriodId() {
+        return MonthlyPeriodId.of(year, month);
+    }
+
+    public MonthlyPeriod withMonth(Month newMonth) {
+        return new MonthlyPeriod(
+                this.year,
+                newMonth,
+                this.ptos
         );
     }
 }

@@ -10,6 +10,7 @@ import static com.listopaye.DateFixtures.thisMonth;
 import static com.listopaye.DateFixtures.thisYear;
 import static com.listopaye.domain.UUIDFixtures.uuidOf;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MonthlyPeriodTest {
 
@@ -38,11 +39,30 @@ class MonthlyPeriodTest {
         );
     }
 
-    private static UUID anId() {
-        return UUID.randomUUID();
-    }
-
-    private MonthlyPeriodId thisMonthlyPeriod() {
+    private static MonthlyPeriodId thisMonthlyPeriod() {
         return MonthlyPeriodId.of(thisYear(), thisMonth());
     }
+
+    @Test
+    void merging_on_different_monthly_periods_should_throw() {
+        // Given
+        var period = aMonthlyPeriod();
+        var periodWithDifferentMonth = period.withMonth(period.month().plus(1));
+        // When/Then
+        assertThatThrownBy(() -> period.merge(periodWithDifferentMonth))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageStartingWith("Cannot merge periods on different months!");
+    }
+
+    private static MonthlyPeriod aMonthlyPeriod() {
+        return aMonthlyPeriod(thisMonthlyPeriod());
+    }
+    private static MonthlyPeriod aMonthlyPeriod(MonthlyPeriodId theMonthlyPeriod) {
+        return MonthlyPeriod.of(
+                theMonthlyPeriod.year(),
+                theMonthlyPeriod.month(),
+                List.of(MonthlyPeriodPto.of(uuidOf("1"), "employee1", theMonthlyPeriod.day(2), theMonthlyPeriod.day(3)))
+        );
+    }
+
 }
