@@ -10,7 +10,7 @@ public class MonthlyPeriodIdRepresentation {
         return year + "-" + month.getValue();
     }
 
-    public static MonthlyPeriodId monthlyPeriodOf(String id) {
+    public static MonthlyPeriodId monthlyPeriodIdOf(String id) {
         var split = id.split("-");
         return MonthlyPeriodId.of(yearOf(split[0]), monthOf(split[1]));
     }

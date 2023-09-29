@@ -9,14 +9,21 @@ import java.util.UUID;
 public class PtoService {
 
     private final PtoRepository ptoRepository;
+    private final MonthlyPeriodService monthlyPeriodService;
 
-    public PtoService(PtoRepository ptoRepository) {
+    public PtoService(PtoRepository ptoRepository, MonthlyPeriodService monthlyPeriodService) {
         this.ptoRepository = ptoRepository;
+        this.monthlyPeriodService = monthlyPeriodService;
     }
 
     public Pto createPto(NewPto newPto) {
         var pto = Pto.of(UUID.randomUUID(), newPto.employeeName(), newPto.startDate(), newPto.endDate());
         ptoRepository.create(pto);
+
+        pto.monthlyPeriodPtos().forEach(
+                monthlyPto -> monthlyPeriodService.addPto(monthlyPto)
+        );
+
         return pto;
     }
 
